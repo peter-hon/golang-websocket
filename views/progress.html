@@ -1,0 +1,29 @@
+var ancestor = document.getElementById('myProgress');
+while (ancestor.firstChild) ancestor.removeChild(ancestor.firstChild);
+
+socket = new WebSocket('ws://' + window.location.host + '/v1/ws/join');
+socket.onmessage = function (event) {
+    var data = JSON.parse(event.data);
+
+    var ancestor = document.getElementById('myProgress'),
+    descendents = ancestor.getElementsByTagName('DIV');
+
+    var msgAlreadyExist = false
+    for (i = 0; i < descendents.length; ++i) {
+        e = descendents[i];
+        if (e.getAttribute("id") == data.new_val.msg_id) {
+            msgAlreadyExist= true;
+            e.style.width=data.new_val.broadcast_count/data.new_val.total_may_know_users*100 + '%';
+        }
+    }
+
+    if (msgAlreadyExist == false) {
+       var element = document.createElement("div");
+       element.setAttribute("id",data.new_val.msg_id);
+       element.style.width= '0%';
+       element.setAttribute("class","myBar");
+       ancestor.appendChild(element);
+       linebreak = document.createElement("br");
+       ancestor.appendChild(linebreak);
+    }
+};
